@@ -1,4 +1,4 @@
 export default (function headline() {
-	const headline = "Welcome to the webpage"
+	const headline = "Newsbox"
 	document.querySelector("h1").innerText = headline
 })()
