@@ -1,31 +1,7 @@
-/******/ (function() { // webpackBootstrap
-/******/ 	"use strict";
-var __webpack_exports__ = {};
+import "../images/LOGO.png";
+import getJSONfromLocalStorage from "./getJSONfromLocalstorage";
 
-;// CONCATENATED MODULE: ./src/scripts/headline.js
-/* harmony default export */ var headline = ((function headline() {
-	const headline = "Newsbox"
-	document.querySelector("h1").innerText = headline
-})());
-
-
-;// CONCATENATED MODULE: ./src/images/LOGO.png
-var LOGO_namespaceObject = "data:image/png;base64,ZXhwb3J0IGRlZmF1bHQgX193ZWJwYWNrX3B1YmxpY19wYXRoX18gKyAiaW1hZ2VzL0xPR08ucG5nIjs=";
-;// CONCATENATED MODULE: ./src/scripts/getJSONfromLocalstorage.js
-function getJSONfromLocalStorage(key) {
-	const OBJECT = localStorage.getItem(key)
-		? JSON.parse(localStorage.getItem(key))
-		: null
-	return OBJECT
-}
-
-/* harmony default export */ var getJSONfromLocalstorage = (getJSONfromLocalStorage);
-
-;// CONCATENATED MODULE: ./src/scripts/fetchArticleApi.js
-
-
-
-/* harmony default export */ var fetchArticleApi = ((function () {
+export default (function () {
     if (!window.location.pathname.includes("index.html")) return;
 
     const categories = [
@@ -35,7 +11,7 @@ function getJSONfromLocalStorage(key) {
         "theater", "t-magazine", "travel", "upshot", "us", "world"
     ];
 
-    const DELETED_ARTICLES = getJSONfromLocalstorage('deleted_articles') ?? []
+    const DELETED_ARTICLES = getJSONfromLocalStorage('deleted_articles') ?? []
 
     const CATEGORIES = document.querySelector('.categories');
 
@@ -132,21 +108,4 @@ function getJSONfromLocalStorage(key) {
 
         CATEGORIES.append(CATEGORY);
     });
-})());
-
-;// CONCATENATED MODULE: ./src/images/aubergine-feta.png
-var aubergine_feta_namespaceObject = "data:image/png;base64,ZXhwb3J0IGRlZmF1bHQgX193ZWJwYWNrX3B1YmxpY19wYXRoX18gKyAiaW1hZ2VzL2F1YmVyZ2luZS1mZXRhLnBuZyI7";
-;// CONCATENATED MODULE: ./src/images/OST3.jpg
-var OST3_namespaceObject = "data:image/jpeg;base64,ZXhwb3J0IGRlZmF1bHQgX193ZWJwYWNrX3B1YmxpY19wYXRoX18gKyAiaW1hZ2VzL09TVDMuanBnIjs=";
-;// CONCATENATED MODULE: ./src/index.js
-
-
-
-
-
-
-
-
-/******/ })()
-;
-//# sourceMappingURL=main.js.map
+})();

@@ -1,6 +1,19 @@
-header {
-display: flex;
-justify-content: center;
-font-size: x-large;
-gap: 30em;
+.primaryheader {
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000;
+    height: 80px;
+    margin-top: 18px;
+    font-size: 25px;
+    gap: 4em;
+    border-bottom: 1px solid;
+
+.headerText{
+	font-size: 26px;
+}
+
+span{
+font-size: 25px;
+}
 }
