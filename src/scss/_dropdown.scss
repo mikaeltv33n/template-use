@@ -41,10 +41,8 @@
         }
 
 
-        &__dropdown {
+        &__dropdown {}
 
-        }
-        
         &__content {
             display: flex;
             gap: 4em;
@@ -74,7 +72,9 @@
                     }
 
                     button {
-                        background-color: #D95454;
+                        margin-top: 16px;
+                        background-color: #87BCBF;
+                        font-size: large;
                         border: none;
                         outline: none;
                         color: white;

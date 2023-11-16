@@ -55,10 +55,10 @@ export default (function () {
                         LISTITEM.appendChild(articleContainer);
 
                         const BUTTON = document.createElement("button");
-                        const DELETE_ICON = document.createElement("span");
-                        DELETE_ICON.classList.add("material-symbols-outlined");
-                        DELETE_ICON.innerText = "delete";
-                        BUTTON.appendChild(DELETE_ICON);
+                        const INBOX_ICON = document.createElement("span");
+                        INBOX_ICON.classList.add("material-symbols-outlined");
+                        INBOX_ICON.innerText = "inbox";
+                        BUTTON.appendChild(INBOX_ICON);
                         LISTITEM.appendChild(BUTTON);
 
                         articleContainer.className = 'article__container';
