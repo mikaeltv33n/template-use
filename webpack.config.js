@@ -7,7 +7,15 @@ module.exports = {
 	//mode: process.env.environment == "production" ? "production" : "development",
 	mode: "production",
 	plugins: [new MiniCssExtractPlugin(), new HtmlWebpackPlugin({
-		template: path.resolve(__dirname, "src", "index.html")
+		template: path.resolve(__dirname, "src", "index.html") 
+	}),
+	new HtmlWebpackPlugin({
+		template: path.resolve(__dirname, "src", "archive.html"),
+		filename: "archive.html"
+	}),
+	new HtmlWebpackPlugin({
+		template: path.resolve(__dirname, "src", "settings.html"),
+		filename: "settings.html"
 	})],
 	module: {
 		rules: [

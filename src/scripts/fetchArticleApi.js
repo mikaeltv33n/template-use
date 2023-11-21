@@ -1,8 +1,7 @@
 import "../images/LOGO.png";
 import getJSONfromLocalStorage from "./getJSONfromLocalstorage";
 
-export default (function () {
-    if (!window.location.pathname.includes("index.html")) return;
+export default function (onlyarchived = false, action = "archive") {
 
     const categories = [
         "arts", "automobiles", "books",
@@ -11,11 +10,22 @@ export default (function () {
         "theater", "t-magazine", "travel", "upshot", "us", "world"
     ];
 
-    const DELETED_ARTICLES = getJSONfromLocalStorage('deleted_articles') ?? []
+    document.addEventListener("click", function (event) {
+        const CLICKEDELEMENT = event.target;
+        if (CLICKEDELEMENT.classList.contains("material-symbols-outlined")) {
+            const DROPDOWN = CLICKEDELEMENT.closest(".category");
+            if (DROPDOWN) {
+                const DROPDOWNICON = DROPDOWN.querySelector(".category__dropdown");
+                DROPDOWNICON.classList.toggle("rotate");
+            }
+        }
+    });
 
+
+    const ARCHIVED_ARTICLES = getJSONfromLocalStorage("archived_articles") ?? []
     const CATEGORIES = document.querySelector('.categories');
-
-    categories.forEach(category => {
+    const HIDDEN_CATEGORIES = []
+    categories.filter(c => onlyarchived || !HIDDEN_CATEGORIES.includes(c)).forEach(category => {
         const CATEGORY = document.createElement('details');
         CATEGORY.className = 'category';
 
@@ -39,7 +49,12 @@ export default (function () {
             fetch(`https://api.nytimes.com/svc/topstories/v2/${category}.json?api-key=uZhoGPSEKtSyAp1AGwJYzO8qDAJsjMvc`)
                 .then(res => res.json())
                 .then(data => {
-                    data.results.filter(element => !DELETED_ARTICLES.includes(element.uri)).forEach(element => {
+                    data.results.filter(element => {
+                        if (onlyarchived) return ARCHIVED_ARTICLES.includes(element.uri)
+
+                        return !ARCHIVED_ARTICLES.includes(element.uri)
+                    }).forEach(element => {
+
                         function truncate(string, maxlength) {
                             const LENGTH = string.length
                             let truncated = string.substr(0, maxlength)
@@ -57,7 +72,10 @@ export default (function () {
                         const BUTTON = document.createElement("button");
                         const INBOX_ICON = document.createElement("span");
                         INBOX_ICON.classList.add("material-symbols-outlined");
-                        INBOX_ICON.innerText = "inbox";
+                        if (action === "archive") BUTTON.classList.add("archive-button")
+                        if (action === "delete") BUTTON.classList.add("delete-button")
+                        if (action === "delete") INBOX_ICON.innerText = "delete"
+                        if (action === "archive") INBOX_ICON.innerText = "inbox";
                         BUTTON.appendChild(INBOX_ICON);
                         LISTITEM.appendChild(BUTTON);
 
@@ -80,7 +98,7 @@ export default (function () {
                         UL.addEventListener("click", (e) => {
                             const LI = e.target.closest("li");
                             const BTN = e.target.closest("button");
-                            if (LI && LI.scrollLeft === 0) { 
+                            if (LI && LI.scrollLeft === 0) {
                                 LI.scrollBy({
                                     left: 1,
                                     behavior: "smooth"
@@ -92,8 +110,16 @@ export default (function () {
                                 });
                             } else if (BTN && LI) {
                                 LI.remove();
-                                DELETED_ARTICLES.push(element.uri)
-                                localStorage.setItem("deleted_articles", JSON.stringify(DELETED_ARTICLES))
+                                if (action === "archive") {
+                                    ARCHIVED_ARTICLES.push(element.uri)
+
+                                } else if (action === "delete") {
+                                    const INDEXTOBEDELETED = ARCHIVED_ARTICLES.indexOf(element.uri)
+                                    if (INDEXTOBEDELETED === -1) return
+                                    ARCHIVED_ARTICLES.splice(INDEXTOBEDELETED, 1)
+
+                                }
+                                localStorage.setItem("archived_articles", JSON.stringify(ARCHIVED_ARTICLES))
                             }
                         });
                         UL.appendChild(LISTITEM);
@@ -108,4 +134,5 @@ export default (function () {
 
         CATEGORIES.append(CATEGORY);
     });
-})();
+};
+

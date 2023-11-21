@@ -4,10 +4,19 @@ var __webpack_exports__ = {};
 
 ;// CONCATENATED MODULE: ./src/scripts/headline.js
 /* harmony default export */ var headline = ((function headline() {
-	const headline = "Newsbox"
-	document.querySelector("h1").innerText = headline
-})());
+    const CURRENTPATH = window.location.pathname;
 
+    if (CURRENTPATH.includes("index.html")) {
+        const INBOX_HEADLINE = "Newsbox";
+        document.querySelector("h1").innerText = INBOX_HEADLINE;
+    } else if (CURRENTPATH.includes("archive.html")) {
+        const ARCHIVE_HEADLINE = "Archive";
+        document.querySelector("h1").innerText = ARCHIVE_HEADLINE;
+     } else if (CURRENTPATH.includes("settings.html")) {
+        const SETTINGS_HEADLINE = "News settings";
+        document.querySelector("h1").innerText = SETTINGS_HEADLINE;
+    }
+})());
 
 ;// CONCATENATED MODULE: ./src/images/LOGO.png
 var LOGO_namespaceObject = "data:image/png;base64,ZXhwb3J0IGRlZmF1bHQgX193ZWJwYWNrX3B1YmxpY19wYXRoX18gKyAiaW1hZ2VzL0xPR08ucG5nIjs=";
@@ -25,8 +34,7 @@ function getJSONfromLocalStorage(key) {
 
 
 
-/* harmony default export */ var fetchArticleApi = ((function () {
-    if (!window.location.pathname.includes("index.html")) return;
+/* harmony default export */ function fetchArticleApi(onlyarchived = false, action = "archive") {
 
     const categories = [
         "arts", "automobiles", "books",
@@ -35,11 +43,22 @@ function getJSONfromLocalStorage(key) {
         "theater", "t-magazine", "travel", "upshot", "us", "world"
     ];
 
-    const DELETED_ARTICLES = getJSONfromLocalstorage('deleted_articles') ?? []
+    document.addEventListener("click", function (event) {
+        const CLICKEDELEMENT = event.target;
+        if (CLICKEDELEMENT.classList.contains("material-symbols-outlined")) {
+            const DROPDOWN = CLICKEDELEMENT.closest(".category");
+            if (DROPDOWN) {
+                const DROPDOWNICON = DROPDOWN.querySelector(".category__dropdown");
+                DROPDOWNICON.classList.toggle("rotate");
+            }
+        }
+    });
 
+
+    const ARCHIVED_ARTICLES = getJSONfromLocalstorage("archived_articles") ?? []
     const CATEGORIES = document.querySelector('.categories');
-
-    categories.forEach(category => {
+    const HIDDEN_CATEGORIES = []
+    categories.filter(c => onlyarchived || !HIDDEN_CATEGORIES.includes(c)).forEach(category => {
         const CATEGORY = document.createElement('details');
         CATEGORY.className = 'category';
 
@@ -63,7 +82,12 @@ function getJSONfromLocalStorage(key) {
             fetch(`https://api.nytimes.com/svc/topstories/v2/${category}.json?api-key=uZhoGPSEKtSyAp1AGwJYzO8qDAJsjMvc`)
                 .then(res => res.json())
                 .then(data => {
-                    data.results.filter(element => !DELETED_ARTICLES.includes(element.uri)).forEach(element => {
+                    data.results.filter(element => {
+                        if (onlyarchived) return ARCHIVED_ARTICLES.includes(element.uri)
+
+                        return !ARCHIVED_ARTICLES.includes(element.uri)
+                    }).forEach(element => {
+
                         function truncate(string, maxlength) {
                             const LENGTH = string.length
                             let truncated = string.substr(0, maxlength)
@@ -81,7 +105,10 @@ function getJSONfromLocalStorage(key) {
                         const BUTTON = document.createElement("button");
                         const INBOX_ICON = document.createElement("span");
                         INBOX_ICON.classList.add("material-symbols-outlined");
-                        INBOX_ICON.innerText = "inbox";
+                        if (action === "archive") BUTTON.classList.add("archive-button")
+                        if (action === "delete") BUTTON.classList.add("delete-button")
+                        if (action === "delete") INBOX_ICON.innerText = "delete"
+                        if (action === "archive") INBOX_ICON.innerText = "inbox";
                         BUTTON.appendChild(INBOX_ICON);
                         LISTITEM.appendChild(BUTTON);
 
@@ -104,7 +131,7 @@ function getJSONfromLocalStorage(key) {
                         UL.addEventListener("click", (e) => {
                             const LI = e.target.closest("li");
                             const BTN = e.target.closest("button");
-                            if (LI && LI.scrollLeft === 0) { 
+                            if (LI && LI.scrollLeft === 0) {
                                 LI.scrollBy({
                                     left: 1,
                                     behavior: "smooth"
@@ -116,8 +143,16 @@ function getJSONfromLocalStorage(key) {
                                 });
                             } else if (BTN && LI) {
                                 LI.remove();
-                                DELETED_ARTICLES.push(element.uri)
-                                localStorage.setItem("deleted_articles", JSON.stringify(DELETED_ARTICLES))
+                                if (action === "archive") {
+                                    ARCHIVED_ARTICLES.push(element.uri)
+
+                                } else if (action === "delete") {
+                                    const INDEXTOBEDELETED = ARCHIVED_ARTICLES.indexOf(element.uri)
+                                    if (INDEXTOBEDELETED === -1) return
+                                    ARCHIVED_ARTICLES.splice(INDEXTOBEDELETED, 1)
+
+                                }
+                                localStorage.setItem("archived_articles", JSON.stringify(ARCHIVED_ARTICLES))
                             }
                         });
                         UL.appendChild(LISTITEM);
@@ -132,13 +167,31 @@ function getJSONfromLocalStorage(key) {
 
         CATEGORIES.append(CATEGORY);
     });
-})());
+};
+
 
 ;// CONCATENATED MODULE: ./src/images/aubergine-feta.png
 var aubergine_feta_namespaceObject = "data:image/png;base64,ZXhwb3J0IGRlZmF1bHQgX193ZWJwYWNrX3B1YmxpY19wYXRoX18gKyAiaW1hZ2VzL2F1YmVyZ2luZS1mZXRhLnBuZyI7";
+;// CONCATENATED MODULE: ./src/scripts/fetchArchivedArticles.js
+
+
+/* harmony default export */ var fetchArchivedArticles = ((function () {
+    if (!window.location.pathname.includes("archive.html")) return;
+
+    fetchArticleApi(true, "delete")
+})());
+;// CONCATENATED MODULE: ./src/scripts/fetchFrontpageArticles.js
+
+
+/* harmony default export */ var fetchFrontpageArticles = ((function () {
+    if (!window.location.pathname.includes("index.html")) return;
+
+    fetchArticleApi()
+})());
 ;// CONCATENATED MODULE: ./src/images/OST3.jpg
 var OST3_namespaceObject = "data:image/jpeg;base64,ZXhwb3J0IGRlZmF1bHQgX193ZWJwYWNrX3B1YmxpY19wYXRoX18gKyAiaW1hZ2VzL09TVDMuanBnIjs=";
 ;// CONCATENATED MODULE: ./src/index.js
+
 
 
 
